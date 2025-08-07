@@ -63,6 +63,16 @@ class Museo:
 
                 data_obra = response_obra.json()
 
+                #Verifico si la obra ya la tengo registrada o no y muestro sus datos
+                #Debe ser a traves del id el cual es unico ya que algunos nombres se repiten
+
+                self.buscar_crear_obra(data_obra["objectID"])
+
+
+    def buscar_crear_obra(self, id):
+        pass
+
+
     def buscar_depto_id(self, id):
         if len(self.deptos) != 0:
             for depto in self.deptos:
