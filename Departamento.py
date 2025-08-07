@@ -9,7 +9,7 @@ class Departamento:
         Nombre descriptivo del departamento.
     """
 
-    def __init__(self, id: int, nombre: str) -> None:
+    def __init__(self, id, nombre):
         """
         Inicializa una nueva instancia de Departamento.
 

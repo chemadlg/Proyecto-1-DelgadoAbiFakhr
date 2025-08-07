@@ -32,7 +32,7 @@ class Autor:
         self.nacimiento = nacimiento
         self.muerte = muerte
 
-    def show(self) -> None:
+    def show(self):
         """
          Imprime los atributos una instancia de la clase Autor.
         """
