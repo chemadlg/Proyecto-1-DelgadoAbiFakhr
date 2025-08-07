@@ -1,6 +1,8 @@
 import requests
+import time
 from Departamento import Departamento
 from Autor import Autor
+from Obra import Obra
 
 class Museo:
     def __init__(self):
@@ -66,12 +68,71 @@ class Museo:
                 #Verifico si la obra ya la tengo registrada o no y muestro sus datos
                 #Debe ser a traves del id el cual es unico ya que algunos nombres se repiten
 
-                self.buscar_crear_obra(data_obra["objectID"])
+                obra = self.buscar_crear_obra(data_obra, depto_selecccionado)
+                
+                #Muestro la obra
+                obra.mostrar()
+
+            index += 20
+            if index >= total_obras:
+                break
+
+            time.sleep(3)
+
+            seguir=input("\nDeseas Mostrar 20 obras mas?\n1. Si \n2. No: ")
+            while not seguir.isnumeric() or not int(seguir) in range(1,3):
+                print("Error! Ingresa 1 si quieres seguir viendo y 2 si no quieres ver mas")
+                seguir=input("\nDeseas Mostrar 20 obras mas?\n1. Si \n2. No: ")
+
+            if seguir == "2":
+                break
 
 
-    def buscar_crear_obra(self, id):
-        pass
+    def buscar_crear_obra(self, data_obra, depto_selecccionado):
+        #Buscar si la obra ya esta registrada
+        for obra in self.obras:
+            if obra.id == data_obra["objectID"]:
+                #Si encuentro una obra que coincida con el id la devuelvo
+                return obra
+        
+        #Si nunca llego al return dentro del bucle entonces al salir del bucle creo la obra
+        id = data_obra["objectID"]
+        titulo=data_obra["title"]
+        departamento=depto_selecccionado
 
+        #Verifico si el autro existe y lo traigo y sin no lo creo
+        autor=self.buscar_crear_autor(data_obra)
+        tipo=data_obra["classification"]
+        anio=data_obra["objectDate"]
+        imagen=data_obra["primaryImage"]
+
+        #Creo un objeto de la clase obra y lo añado a mi lista de obras
+        obra_nueva = Obra(id, titulo, departamento, autor, tipo, anio, imagen)
+        self.obras.append(obra_nueva)
+        
+        #Devuelvo la obra
+        return obra_nueva
+
+    
+    def buscar_crear_autor(self, data):
+        #Buscar si el autor ya esta registrado
+        for autor in self.autores:
+            if autor.nombre == data["artistDisplayName"]:
+                #Retorno el autor si encuentro uno que coincida con el nombre
+                return autor
+        
+        #Si nunca llego al return dentro del bucle entonces al salir del bucle creo al autor
+        nombre=data["artistDisplayName"]
+        nacionalidad=data["artistNationality"]
+        nacimiento=data["artistBeginDate"]
+        muerte=data["artistEndDate"]
+
+        #Creo un objeto de la clase autor y lo añado a mi lista de autores
+        autor_nuevo = Autor(nombre, nacionalidad, nacimiento, muerte)
+        self.autores.append(autor_nuevo)
+
+        #Devuelvo al autor
+        return autor_nuevo
 
     def buscar_depto_id(self, id):
         if len(self.deptos) != 0:
