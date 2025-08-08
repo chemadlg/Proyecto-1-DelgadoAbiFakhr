@@ -26,6 +26,12 @@ class Museo:
             self.deptos.append(Departamento(depto_id, nombre))
 
         #Luego cargar el CSV con las nacionalidades
+        with open('CH_Nationality_List_20171130_v1.csv', encoding='utf-8') as archivo:
+            next(archivo)  # saltamos la primera línea (cabecera)
+            for linea in archivo:
+                linea = linea.strip()
+                if linea:  # ignoramos líneas vacías
+                    self.nacionalidades.append(linea)
 
     def obras_depto(self):
 
@@ -63,30 +69,32 @@ class Museo:
             for id_act in ids_actual:
                 response_obra = requests.get(f"https://collectionapi.metmuseum.org/public/collection/v1/objects/{id_act}")
 
-                data_obra = response_obra.json()
+                if response_obra.status_code == 200:
+                    data_obra = response_obra.json()
 
-                #Verifico si la obra ya la tengo registrada o no y muestro sus datos
-                #Debe ser a traves del id el cual es unico ya que algunos nombres se repiten
+                    #Verifico si la obra ya la tengo registrada o no y muestro sus datos
+                    #Debe ser a traves del id el cual es unico ya que algunos nombres se repiten
 
-                obra = self.buscar_crear_obra(data_obra, depto_selecccionado)
-                
-                #Muestro la obra
-                obra.mostrar()
+                    obra = self.buscar_crear_obra(data_obra, depto_selecccionado)
+                    
+                    #Muestro la obra
+                    print("")
+                    obra.show()
+                    print("")
 
-            index += 20
-            if index >= total_obras:
+            num_lote += 10
+            if num_lote >= total_obras:
                 break
 
             time.sleep(3)
 
-            seguir=input("\nDeseas Mostrar 20 obras mas?\n1. Si \n2. No: ")
+            seguir=input("\nDeseas Mostrar 10 obras mas?\n1. Si \n2. No\n ")
             while not seguir.isnumeric() or not int(seguir) in range(1,3):
                 print("Error! Ingresa 1 si quieres seguir viendo y 2 si no quieres ver mas")
-                seguir=input("\nDeseas Mostrar 20 obras mas?\n1. Si \n2. No: ")
+                seguir=input("\nDeseas Mostrar 10 obras mas?\n1. Si \n2. No\n ")
 
             if seguir == "2":
                 break
-
 
     def buscar_crear_obra(self, data_obra, depto_selecccionado):
         #Buscar si la obra ya esta registrada
@@ -143,10 +151,34 @@ class Museo:
         return None
 
     def obras_nacionalidad(self):
-        pass
+        print("\nNacionalidades Disponibles:")
+        count = 1
+        for nac in self.nacionalidades:
+            print(f"{count}. {nac}")
+            count += 1
+
+        #Elegir el numero correspondiente a la nacionalidad
+        opcion = input("Ingresa el numero correspondiente a la nacionalidad deseada: ")
+        while not opcion.isnumeric() or not int(opcion) in range(1, count+1):
+            print("Error! El id debe ser numerio y debe ser un id valido.")
+            opcion = input("Ingresa el numero correspondiente a la nacionalidad deseada: ")
+
+        nac_select = self.nacionalidades[int(opcion)-1]
+
+        print(f"Haz seleccionado {nac_select}")
 
     def obras_autor(self):
-        pass
+        nombre = input("Ingrese el nombre del autor: ").lower()
+        obras_encontradas = []
+        for obra in self.obras:
+            if obra.autor.nombre.lower() == nombre:
+                obras_encontradas.append(obra)
+
+        if len(obras_encontradas) != 0:
+            for obra in obras_encontradas:
+                obra.show()
+        else:
+            print("No se encontraron obras de ese autor")
 
     def iniciar(self):
         #Cargar los departamentos y el CSV

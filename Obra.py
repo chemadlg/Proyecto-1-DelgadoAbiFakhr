@@ -46,8 +46,9 @@ class Obra:
         self.anio = anio
         self.imagen = imagen
 
-    def mostrar(self):
+    def show(self):
         """
         Imprime los atributos una instancia de la clase Obra.
         """
-        print(f"ID: {self.id}\nTitulo: {self.titulo}\nDepartamento: {self.departamento.nombre}\nAutor:\n{self.autor.mostrar()}\nTipo: {self.tipo}\nAño de Creacion: {self.anio}\nImagen: {self.imagen}")
+        print(f"ID: {self.id}\nTitulo: {self.titulo}\nDepartamento: {self.departamento.nombre}\nTipo: {self.tipo}\nAño de Creacion: {self.anio}\nImagen: {self.imagen}\nAutor:\n")
+        self.autor.show()
